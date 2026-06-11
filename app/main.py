@@ -27,7 +27,12 @@ from PIL import Image
 from app.utils import load_model, predict_with_gradcam, CLASSES
 
 MODEL_PATH = os.getenv("MODEL_PATH", "models/efficientnet_best.pt")
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+if torch.cuda.is_available():
+    device = torch.device("cuda")
+elif torch.backends.mps.is_available():
+    device = torch.device("mps")
+else:
+    device = torch.device("cpu")
 model = None
 
 BASE_DIR = Path(__file__).parent
@@ -58,7 +63,7 @@ app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="stat
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request) -> HTMLResponse:
     """Serve the main UI."""
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="index.html")
 
 
 @app.post("/predict")
