@@ -1,3 +1,12 @@
+---
+title: Weather Image Classifier
+emoji: 🌤
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+pinned: false
+---
+
 # Weather Image Classifier
 
 > EfficientNetB3-based weather classification with GradCAM explainability and systematic robustness evaluation.
