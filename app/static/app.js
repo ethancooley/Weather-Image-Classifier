@@ -4,7 +4,7 @@ let selectedFile = null;
 
 /**
  * Handle file selection from the upload input.
- * Shows a preview image and enables the classify button.
+ * Switches from upload zone to preview, enables classify button.
  */
 function handleFile(event) {
   selectedFile = event.target.files[0];
@@ -12,24 +12,30 @@ function handleFile(event) {
 
   const reader = new FileReader();
   reader.onload = (e) => {
-    const preview = document.getElementById("preview");
-    preview.src = e.target.result;
-    preview.style.display = "block";
+    document.getElementById('preview').src = e.target.result;
+    document.getElementById('uploadZone').style.display = 'none';
+    document.getElementById('previewContainer').style.display = 'block';
+    document.getElementById('fileName').textContent =
+      selectedFile.name.length > 22
+        ? selectedFile.name.slice(0, 20) + '…'
+        : selectedFile.name;
   };
   reader.readAsDataURL(selectedFile);
 
-  document.getElementById("classifyBtn").disabled = false;
-  document.getElementById("results").style.display = "none";
+  document.getElementById('classifyBtn').disabled = false;
+  document.getElementById('resultsContent').style.display = 'none';
+  document.getElementById('emptyState').style.display = 'flex';
 }
 
 /**
- * Handle drag-and-drop onto the upload area.
+ * Handle drag-and-drop onto the upload zone.
  */
 function handleDrop(event) {
   event.preventDefault();
+  handleDragLeave();
   const file = event.dataTransfer.files[0];
   if (!file) return;
-  const input = document.getElementById("fileInput");
+  const input = document.getElementById('fileInput');
   const dt = new DataTransfer();
   dt.items.add(file);
   input.files = dt.files;
@@ -38,11 +44,13 @@ function handleDrop(event) {
 
 function handleDragOver(event) {
   event.preventDefault();
-  document.querySelector(".upload-area").style.borderColor = "#6c8cf5";
+  document.getElementById('uploadZone').style.borderColor = 'var(--text-info)';
+  document.getElementById('uploadZone').style.background = 'var(--bg-info)';
 }
 
 function handleDragLeave() {
-  document.querySelector(".upload-area").style.borderColor = "#3a3f55";
+  document.getElementById('uploadZone').style.borderColor = '';
+  document.getElementById('uploadZone').style.background = '';
 }
 
 /**
@@ -51,74 +59,56 @@ function handleDragLeave() {
 async function classify() {
   if (!selectedFile) return;
 
-  // Show loading state
-  const results = document.getElementById("results");
-  const spinner = document.getElementById("spinner");
-  const output = document.getElementById("output");
-  const btn = document.getElementById("classifyBtn");
-
-  results.style.display = "block";
-  spinner.style.display = "block";
-  spinner.textContent = "Analyzing...";
-  output.style.display = "none";
+  const btn = document.getElementById('classifyBtn');
   btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader-2" aria-hidden="true"></i> Analyzing...';
 
   const form = new FormData();
-  form.append("file", selectedFile);
+  form.append('file', selectedFile);
 
   try {
-    const res = await fetch("/predict", { method: "POST", body: form });
-
-    if (!res.ok) {
-      throw new Error(`Server error: ${res.status}`);
-    }
-
+    const res = await fetch('/predict', { method: 'POST', body: form });
+    if (!res.ok) throw new Error(`Server error: ${res.status}`);
     const data = await res.json();
     renderResults(data);
-
-    spinner.style.display = "none";
-    output.style.display = "block";
   } catch (err) {
-    spinner.textContent = "Something went wrong — please try again.";
+    btn.innerHTML = '<i class="ti ti-alert-circle" aria-hidden="true"></i> Error — try again';
+    btn.disabled = false;
     console.error(err);
+    return;
   }
 
+  btn.innerHTML = '<i class="ti ti-sparkles" aria-hidden="true"></i> Classify image';
   btn.disabled = false;
 }
 
 /**
  * Render prediction results into the DOM.
  *
- * @param {Object} data - Response from /predict endpoint.
- * @param {string} data.prediction - Predicted class label.
- * @param {number} data.confidence - Confidence score 0-1.
- * @param {Array}  data.top5 - Array of {class, confidence} objects.
+ * @param {Object} data           - Response from /predict.
+ * @param {string} data.prediction  - Predicted class label.
+ * @param {number} data.confidence  - Confidence score 0–1.
+ * @param {Array}  data.top5        - [{class, confidence}, ...].
  * @param {string} data.heatmap_b64 - Base64-encoded GradCAM PNG.
  */
 function renderResults(data) {
-  // Prediction badge
-  document.getElementById("predLabel").textContent = data.prediction;
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('resultsContent').style.display = 'flex';
 
-  // Confidence text
-  document.getElementById("confText").textContent =
-    `Confidence: ${(data.confidence * 100).toFixed(1)}%`;
+  const pct = (data.confidence * 100).toFixed(1);
+  document.getElementById('predLabel').textContent = data.prediction;
+  document.getElementById('confBadge').textContent = pct + '%';
+  document.getElementById('confBar').style.width = pct + '%';
 
-  // GradCAM heatmap
-  document.getElementById("heatmap").src =
-    "data:image/png;base64," + data.heatmap_b64;
+  document.getElementById('bars').innerHTML = data.top5.map((item) => `
+    <div class="bar-row">
+      <span class="bar-label">${item.class}</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width: ${(item.confidence * 100).toFixed(1)}%"></div>
+      </div>
+      <span class="bar-pct">${(item.confidence * 100).toFixed(1)}%</span>
+    </div>`).join('');
 
-  // Top 5 probability bars
-  const bars = document.getElementById("bars");
-  bars.innerHTML = data.top5
-    .map(
-      (item) => `
-      <div class="bar-row">
-        <span class="bar-label">${item.class}</span>
-        <div class="bar-track">
-          <div class="bar-fill" style="width: ${(item.confidence * 100).toFixed(1)}%"></div>
-        </div>
-        <span class="bar-pct">${(item.confidence * 100).toFixed(1)}%</span>
-      </div>`
-    )
-    .join("");
+  document.getElementById('origImg').src = document.getElementById('preview').src;
+  document.getElementById('heatmapImg').src = 'data:image/png;base64,' + data.heatmap_b64;
 }

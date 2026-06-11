@@ -5,74 +5,116 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Weather Classifier</title>
   <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
 </head>
 <body>
 
-  <h1>🌤 Weather Classifier</h1>
-  <p class="subtitle">Upload a photo — get an AI prediction with visual explanation</p>
+  <div class="app">
 
-  <div class="card">
+    <!-- Left panel: upload + controls -->
+    <div class="left-panel">
 
-    <!-- Upload area -->
-    <div
-      class="upload-area"
-      onclick="document.getElementById('fileInput').click()"
-      ondrop="handleDrop(event)"
-      ondragover="handleDragOver(event)"
-      ondragleave="handleDragLeave()"
-    >
-      <p>📸 Click or drag an image here</p>
-      <p class="upload-hint">JPG, PNG supported</p>
-      <input
-        type="file"
-        id="fileInput"
-        accept="image/*"
-        onchange="handleFile(event)"
+      <div class="logo-row">
+        <div class="logo-icon"><i class="ti ti-cloud" aria-hidden="true"></i></div>
+        <div>
+          <div class="logo-text">Weather Classifier</div>
+          <div class="logo-sub">EfficientNetB3 · GradCAM</div>
+        </div>
+      </div>
+
+      <!-- Upload zone (shown before image selected) -->
+      <div
+        id="uploadZone"
+        class="upload-zone"
+        onclick="document.getElementById('fileInput').click()"
+        ondrop="handleDrop(event)"
+        ondragover="handleDragOver(event)"
+        ondragleave="handleDragLeave()"
+        role="button"
+        aria-label="Upload image"
+        tabindex="0"
       >
+        <div class="upload-icon"><i class="ti ti-upload" aria-hidden="true"></i></div>
+        <div class="upload-title">Drop an image or click to browse</div>
+        <div class="upload-hint">JPG · PNG · WEBP</div>
+        <input type="file" id="fileInput" accept="image/*" onchange="handleFile(event)">
+      </div>
+
+      <!-- Preview (shown after image selected) -->
+      <div id="previewContainer" class="preview-container">
+        <img id="preview" class="preview-img" alt="Selected image preview">
+        <div class="preview-badge">
+          <i class="ti ti-photo" aria-hidden="true"></i>
+          <span id="fileName"></span>
+        </div>
+      </div>
+
+      <!-- Classify button -->
+      <button class="classify-btn" id="classifyBtn" onclick="classify()" disabled>
+        <i class="ti ti-sparkles" aria-hidden="true"></i>
+        Classify image
+      </button>
+
     </div>
 
-    <!-- Image preview -->
-    <img id="preview" alt="Image preview">
+    <!-- Right panel: results -->
+    <div class="right-panel">
 
-    <!-- Classify button -->
-    <button id="classifyBtn" onclick="classify()" disabled>
-      Classify
-    </button>
+      <div class="top-bar">
+        <div class="section-label">Results</div>
+        <div class="model-pill">EfficientNetB3</div>
+      </div>
 
-    <!-- Results -->
-    <div class="results" id="results">
+      <!-- Empty state -->
+      <div id="emptyState" class="empty-state">
+        <i class="ti ti-photo-scan empty-icon" aria-hidden="true"></i>
+        Upload an image to see the prediction and GradCAM explanation
+      </div>
 
-      <div id="spinner" class="spinner">Analyzing...</div>
+      <!-- Results (hidden until classify runs) -->
+      <div id="resultsContent" class="results-content">
 
-      <div id="output" style="display: none;">
+        <!-- Prediction card -->
+        <div class="result-card">
+          <div class="prediction-row">
+            <div class="prediction-label" id="predLabel">—</div>
+            <div class="confidence-badge" id="confBadge">—</div>
+          </div>
+          <div class="confidence-sub">Model confidence score</div>
+          <div class="confidence-bar-track">
+            <div class="confidence-bar-fill" id="confBar" style="width: 0%"></div>
+          </div>
 
-        <!-- Prediction -->
-        <div class="prediction-badge" id="predLabel"></div>
-        <p class="confidence" id="confText"></p>
+          <div class="divider"></div>
 
-        <!-- GradCAM heatmap -->
-        <div class="heatmap-section">
-          <h3>GradCAM — What the model focused on</h3>
-          <img id="heatmap" alt="GradCAM heatmap">
+          <div class="section-label">Top 5 predictions</div>
+          <div id="bars"></div>
         </div>
 
-        <!-- Top 5 bars -->
-        <div class="top5">
-          <h3>Top 5 Predictions</h3>
-          <div id="bars"></div>
+        <!-- GradCAM card -->
+        <div class="heatmap-card">
+          <div class="heatmap-header">
+            <div class="heatmap-title">
+              <i class="ti ti-eye" aria-hidden="true"></i>
+              GradCAM explanation
+            </div>
+            <div class="heatmap-sub">what the model focused on</div>
+          </div>
+          <div class="heatmap-body">
+            <div class="heatmap-col">
+              <div class="heatmap-col-label">Original</div>
+              <img id="origImg" class="heatmap-img" alt="Original image">
+            </div>
+            <div class="heatmap-col">
+              <div class="heatmap-col-label">Activation map</div>
+              <img id="heatmapImg" class="heatmap-img" alt="GradCAM heatmap overlay">
+            </div>
+          </div>
         </div>
 
       </div>
     </div>
-
   </div>
-
-  <footer>
-    Built with EfficientNetB3 ·
-    <a href="https://www.kaggle.com/datasets/jehanbhathena/weather-dataset" target="_blank">
-      Dataset
-    </a>
-  </footer>
 
   <script src="/static/app.js"></script>
 
