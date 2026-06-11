@@ -138,6 +138,17 @@ Results are saved to `data/outputs/robustness_results.json` and plotted at `data
 
 ---
 
+## Model Weights
+
+The trained model checkpoint (`models/efficientnet_best.pt`, ~43MB) is stored using [Git LFS](https://git-lfs.github.com). Make sure you have Git LFS installed before cloning:
+
+```bash
+git lfs install
+git clone https://github.com/ethancooley/Weather-Image-Classifier
+```
+
+If you cloned without LFS, run `git lfs pull` to download the weights.
+
 ## Requirements
 
 - Python 3.10+
