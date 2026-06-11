@@ -1,0 +1,4 @@
+{
+  "model": "svm",
+  "test_accuracy": 0.654
+}

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather Classifier</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  <h1>🌤 Weather Classifier</h1>
+  <p class="subtitle">Upload a photo — get an AI prediction with visual explanation</p>
+
+  <div class="card">
+
+    <!-- Upload area -->
+    <div
+      class="upload-area"
+      onclick="document.getElementById('fileInput').click()"
+      ondrop="handleDrop(event)"
+      ondragover="handleDragOver(event)"
+      ondragleave="handleDragLeave()"
+    >
+      <p>📸 Click or drag an image here</p>
+      <p class="upload-hint">JPG, PNG supported</p>
+      <input
+        type="file"
+        id="fileInput"
+        accept="image/*"
+        onchange="handleFile(event)"
+      >
+    </div>
+
+    <!-- Image preview -->
+    <img id="preview" alt="Image preview">
+
+    <!-- Classify button -->
+    <button id="classifyBtn" onclick="classify()" disabled>
+      Classify
+    </button>
+
+    <!-- Results -->
+    <div class="results" id="results">
+
+      <div id="spinner" class="spinner">Analyzing...</div>
+
+      <div id="output" style="display: none;">
+
+        <!-- Prediction -->
+        <div class="prediction-badge" id="predLabel"></div>
+        <p class="confidence" id="confText"></p>
+
+        <!-- GradCAM heatmap -->
+        <div class="heatmap-section">
+          <h3>GradCAM — What the model focused on</h3>
+          <img id="heatmap" alt="GradCAM heatmap">
+        </div>
+
+        <!-- Top 5 bars -->
+        <div class="top5">
+          <h3>Top 5 Predictions</h3>
+          <div id="bars"></div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    Built with EfficientNetB3 ·
+    <a href="https://www.kaggle.com/datasets/jehanbhathena/weather-dataset" target="_blank">
+      Dataset
+    </a>
+  </footer>
+
+  <script src="/static/app.js"></script>
+
+</body>
+</html>

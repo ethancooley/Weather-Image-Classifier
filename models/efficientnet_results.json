@@ -1,0 +1,6 @@
+{
+  "model": "efficientnet_b3",
+  "best_val_accuracy": 0.8749,
+  "test_accuracy": 0.8719,
+  "epochs": 20
+}

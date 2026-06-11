@@ -1,0 +1,5 @@
+{
+  "model": "baseline",
+  "majority_class": "rime",
+  "test_accuracy": 0.1701
+}

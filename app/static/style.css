@@ -1,0 +1,222 @@
+/* Weather Classifier — Stylesheet */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #0f1117;
+  color: #e0e0e0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+/* ── Header ─────────────────────────────────────── */
+
+h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #ffffff;
+}
+
+p.subtitle {
+  color: #888;
+  margin-bottom: 40px;
+  font-size: 0.95rem;
+}
+
+/* ── Card ────────────────────────────────────────── */
+
+.card {
+  background: #1a1d27;
+  border-radius: 16px;
+  padding: 32px;
+  width: 100%;
+  max-width: 640px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* ── Upload area ─────────────────────────────────── */
+
+.upload-area {
+  border: 2px dashed #3a3f55;
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.upload-area:hover {
+  border-color: #6c8cf5;
+}
+
+.upload-area input {
+  display: none;
+}
+
+.upload-area label {
+  cursor: pointer;
+  color: #6c8cf5;
+  font-weight: 500;
+}
+
+.upload-hint {
+  color: #555;
+  font-size: 0.85rem;
+  margin-top: 6px;
+}
+
+/* ── Preview image ───────────────────────────────── */
+
+#preview {
+  max-width: 100%;
+  border-radius: 8px;
+  margin-top: 16px;
+  display: none;
+}
+
+/* ── Classify button ─────────────────────────────── */
+
+button {
+  margin-top: 20px;
+  width: 100%;
+  padding: 14px;
+  background: #6c8cf5;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+button:hover {
+  background: #5a7ae0;
+}
+
+button:disabled {
+  background: #3a3f55;
+  cursor: not-allowed;
+}
+
+/* ── Results section ─────────────────────────────── */
+
+.results {
+  margin-top: 32px;
+  display: none;
+}
+
+.prediction-badge {
+  display: inline-block;
+  background: #6c8cf5;
+  color: white;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  text-transform: capitalize;
+}
+
+.confidence {
+  color: #888;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}
+
+/* ── GradCAM section ─────────────────────────────── */
+
+.heatmap-section h3,
+.top5 h3 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+#heatmap {
+  width: 100%;
+  border-radius: 8px;
+}
+
+/* ── Top 5 probability bars ──────────────────────── */
+
+.top5 {
+  margin-top: 20px;
+}
+
+.bar-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 10px;
+}
+
+.bar-label {
+  width: 110px;
+  font-size: 0.85rem;
+  text-transform: capitalize;
+  color: #ccc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bar-track {
+  flex: 1;
+  background: #2a2d3e;
+  border-radius: 4px;
+  height: 8px;
+}
+
+.bar-fill {
+  height: 8px;
+  border-radius: 4px;
+  background: #6c8cf5;
+  transition: width 0.4s ease;
+}
+
+.bar-pct {
+  width: 45px;
+  font-size: 0.8rem;
+  color: #888;
+  text-align: right;
+}
+
+/* ── Spinner ─────────────────────────────────────── */
+
+.spinner {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+
+/* ── Footer ──────────────────────────────────────── */
+
+footer {
+  margin-top: 48px;
+  color: #444;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+footer a {
+  color: #6c8cf5;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
